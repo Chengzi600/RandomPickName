@@ -44,7 +44,7 @@ class PickName:
 
         # 检查更新
         try:
-            response = requests.get("https://api.github.com/repos/Chengzi600/GetBilibiliSpaceInfo/releases/latest")
+            response = requests.get("https://api.github.com/repos/Chengzi600/RandomPickName/releases/latest")
             latest_version = response.json()['tag_name']
             latest_version_info = response.json()['body']
         except requests.exceptions:
@@ -75,7 +75,7 @@ class PickName:
 
         # 抽取名字按钮
         self.pick_name_button = tk.Button(self.root, text="抽取名字", command=self.pick_name, font=("黑体", 25),
-                                          bg='yellow')
+                                          bg='orange')
         self.pick_name_button.pack()
 
         # 重置按钮
