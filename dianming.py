@@ -11,9 +11,9 @@ from tkinter import messagebox
 class PickName:
     def __init__(self, root):
         # 版本信息
-        version = 'v1.3.1'
-        version_time = '2023.12.17'
-        self.config_version = '1.1.0'
+        self.version = 'v1.3.2'
+        self.version_time = '2023.12.17'
+        self.config_version = '1.1.2'
 
         # 初始名单
         self.names = [
@@ -42,28 +42,7 @@ class PickName:
         self.root = root
         self.selected_name = ''
 
-        # 检查更新
-        try:
-            response = requests.get("https://api.github.com/repos/Chengzi600/RandomPickName/releases/latest")
-            latest_version = response.json()['tag_name']
-            latest_version_info = response.json()['body']
-        except requests.exceptions:
-            latest_version = '99.99.99'
-            latest_version_info = '99.99.99'
-
-        # 窗口初始化
-        if latest_version != version:
-            if latest_version == '99.99.99':
-                self.root.title("【检查更新失败】点名程序(81专用) - 版本:{} - 编译日期:{}".format(version, version_time))
-            else:
-                self.root.title(
-                    "【发现新版本-{}-{}】点名程序(81专用) - 版本:{} - 编译日期:{}".format(latest_version, latest_version_info,
-                                                                                          version, version_time))
-                self.root.geometry("1000x490")
-        else:
-            self.root.title("【已是最新版本】点名程序(81专用) - 版本:{} - 编译日期:{}".format(version, version_time))
-            self.root.geometry("700x490")
-
+        self.root.geometry("700x490")
         self.root.resizable(False, False)
 
         # 姓名显示区域
@@ -107,6 +86,7 @@ class PickName:
         # 初始化
         self.read_config()
         self.update_stats()
+        self.check_update()
 
     # 配置文件读取
     def read_config(self):
@@ -122,7 +102,7 @@ class PickName:
                 'config_version': self.config_version
             }
             try:
-                with open(file_dir) as config_file:
+                with open(file_dir, encoding='utf-8') as config_file:
                     config = json.load(config_file)
                     if not config['config_version'] == self.config_version:
                         messagebox.showwarning('警告',
@@ -138,7 +118,7 @@ class PickName:
                     self.pick_animation_var.set(self.animation)
 
             except FileNotFoundError as e:
-                with open(file_dir, 'w+') as config_file:
+                with open(file_dir, 'w+', encoding='utf-8') as config_file:
                     json.dump(config_v, config_file)
                 # with open(file_dir) as config_file_r:
                 # config = json.load(config_file_r)
@@ -149,23 +129,24 @@ class PickName:
         except Exception as e:
             messagebox.showerror('错误',
                                  '配置文件创建或读取错误!\n请检查程序是否有对当前文件夹的读写权限\n可能配置文件已经损坏，请删除配置文件夹')
+            print("错误信息:", e)
             sys.exit('FAILED_TO_LOAD_CONFIG')
 
     # 配置文件写入
     def save_config(self):
         try:
             file_dir = r'./dianming/config.json'
-            with open(file_dir, 'r') as config_file:
+            with open(file_dir, 'r', encoding='utf-8') as config_file:
                 config = json.load(config_file)
                 config['pick_again'] = self.pick_again
                 config['animation'] = self.animation
                 config['can_pick_names'] = self.can_pick_names
                 config['picked_count'] = self.picked_count
-            with open(file_dir, 'w') as config_file:
-                json.dump(config, config_file)
+            with open(file_dir, 'w', encoding='utf-8') as config_file:
+                json.dump(config, config_file, ensure_ascii=False)
         except Exception as e:
             messagebox.showerror('错误', '配置文件写入错误！')
-            print(e)
+            print("配置文件写入错误:", e)
 
     def set_pick_again(self):
         if not self.pick_again:
@@ -282,6 +263,7 @@ class PickName:
             return
 
     def update_stats(self):
+
         if not self.pick_again:
             try:
                 self.stats_label.config(
@@ -295,6 +277,32 @@ class PickName:
                         len(self.can_pick_names), self.picked_count, '0'))
         else:
             self.stats_label.config(text="总抽取次数: {}".format(self.picked_count))
+
+    def check_update(self):
+        # 检查更新
+        try:
+            response = requests.get("https://api.github.com/repos/Chengzi600/RandomPickName/releases/latest")
+            latest_version = response.json()['tag_name']
+            latest_version_info = response.json()['body']
+        except Exception as e:
+            print('检查更新失败:', e)
+            latest_version = '99.99.99'
+            latest_version_info = '99.99.99'
+
+        # 窗口操作
+        if latest_version != self.version:
+            if latest_version == '99.99.99':
+                self.root.title(
+                    "【检查更新失败】点名程序(81专用) - 版本:{} - 编译日期:{}".format(self.version, self.version_time))
+            else:
+                self.root.title(
+                    "【发现新版本-{}-{}】点名程序(81专用) - 版本:{} - 编译日期:{}".format(
+                        latest_version, latest_version_info, self.version, self.version_time))
+                self.root.geometry("1000x490")
+        else:
+            self.root.title(
+                "【已是最新版本】点名程序(81专用) - 版本:{} - 编译日期:{}".format(self.version, self.version_time))
+            self.root.geometry("700x490")
 
 
 if __name__ == "__main__":
