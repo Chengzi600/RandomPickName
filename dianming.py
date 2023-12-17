@@ -12,7 +12,7 @@ class PickName:
     def __init__(self, root):
         # 版本信息
         version = 'v1.3.1'
-        version_time = '2023.12.16'
+        version_time = '2023.12.17'
         self.config_version = '1.1.0'
 
         # 初始名单
