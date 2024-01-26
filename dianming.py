@@ -23,6 +23,20 @@ class PickName:
             "吴雨馨", "徐嘉铭", "徐楠", "徐腾宇", "徐媛轩", "许隆劲", "杨可心", "余思妍", "余欣萌", "袁子扬",
             "张睿", "张燕", "张濯铮", "章怡宸", "章轶琛", "赵梓霖", "周翔", "朱思静", "朱田茜", "祝馨怡"
         ]
+        self.g_names = [
+            "陈佳绮", "邓佳丽", "邓欣悦", "邓颖欣", "段苏琴", "龚雨轩",
+            "胡雪颖", "李芳仪", "马可欣",
+            "涂淑淇", "万宸希", "万晨欣", "万心悦", "王艺佳", "吴雨馨",
+            "徐楠", "徐媛轩", "杨可心", "余思妍", "余欣萌", "张燕",
+            "张濯铮", "朱思静", "朱田茜", "祝馨怡", "章怡宸"
+        ]
+        self.b_names = [
+            '樊志杰', '胡思威', '黄煜鑫', '姜文涛', '刘恩泉', '刘圣洋', '罗星', '浦睿',
+            '孙健豪', '陶宸皓', '万梓鑫', '徐嘉铭', '徐腾宇', '许隆劲', '袁子扬',
+            '张睿', '章轶琛', '赵梓霖', '周翔', "李钦", "刘晨", "李佳亮", "王浩然"
+        ]
+
+        # print(len(self.g_names)+len(self.b_names))
         # self.names = ['a', 'b', 'c', 'd']
 
         # 初始化已抽取的名字列表
@@ -32,6 +46,8 @@ class PickName:
         self.pick_again = False
         self.animation = True
         self.recite = False
+        self.pick_only_g = False
+        self.pick_only_b = False
         self.animation_time = 1.0
         self.picked_count = 0
         self.wait_recite_time = 5
@@ -67,6 +83,18 @@ class PickName:
                                               font=("宋体", 15), variable=self.recite_var)
         self.repeat_checkbox.pack()
 
+        # 复选框，是否只抽男/女
+        self.g_names_pick_var = tk.BooleanVar()
+
+        self.g_names_pick_checkbox = tk.Checkbutton(self.root, text="只抽女生", command=self.set_pick_group_g,
+                                                    font=("宋体", 15), variable=self.g_names_pick_var)
+        self.g_names_pick_checkbox.pack()
+
+        self.b_names_pick_var = tk.BooleanVar()
+        self.b_names_pick_checkbox = tk.Checkbutton(self.root, text="只抽男生", command=self.set_pick_group_b,
+                                                    font=("宋体", 15), variable=self.b_names_pick_var)
+        self.b_names_pick_checkbox.pack()
+
         # 复选框，是否重复抽取
         self.pick_again_var = tk.BooleanVar()
         self.repeat_checkbox = tk.Checkbutton(self.root, text="允许重复抽取", command=self.set_pick_again,
@@ -84,6 +112,8 @@ class PickName:
         self.stats_label.pack(side='bottom')
 
         # 初始化
+        root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
         self.read_config()
         self.update_stats()
         self.check_update()
@@ -151,7 +181,8 @@ class PickName:
     def set_pick_again(self):
         if not self.pick_again:
             self.pick_again = True
-            tk.messagebox.showwarning('提示', '如切换至可重复模式，请点击重置，否则可能导致部分名字无法抽到!')
+            self.can_pick_names = self.names.copy()
+            tk.messagebox.showinfo('提示', '切换成功,已清空已抽取名单')
         elif self.pick_again:
             self.pick_again = False
         self.update_stats()
@@ -171,6 +202,31 @@ class PickName:
             self.recite = False
             self.is_running = False
             self.timer_label.forget()
+
+    def set_pick_group_g(self):
+        if not self.pick_only_g:
+            self.pick_only_g = True
+            self.set_pick_group('g')
+        else:
+            self.pick_only_g = False
+
+    def set_pick_group_b(self):
+        if not self.pick_only_b:
+            self.pick_only_b = True
+            self.set_pick_group('b')
+        else:
+            self.pick_only_b = False
+
+    def set_pick_group(self, ab):
+        # 如果两个复选框都被选中，则取消另一个的选中状态
+        if self.pick_only_b and self.pick_only_g:
+            if ab == 'g':
+                self.pick_only_b = False
+                self.b_names_pick_var.set(False)
+            else:
+                self.pick_only_g = False
+                self.g_names_pick_var.set(False)
+
 
     def pick_name(self):
 
@@ -204,7 +260,7 @@ class PickName:
         # 更新统计信息
         self.picked_count += 1
         self.update_stats()
-        self.save_config()
+        # self.save_config()
 
     def perform_countdown(self, seconds):
         self.pick_name_button.config(state='disabled')
@@ -303,6 +359,21 @@ class PickName:
             self.root.title(
                 "【已是最新版本】点名程序(81专用) - 版本:{} - 编译日期:{}".format(self.version, self.version_time))
             self.root.geometry("700x490")
+
+    def on_closing(self):
+        if self.pick_again:
+            self.save_config()
+            sys.exit()
+
+        result = messagebox.askyesno(
+            "保存吗?",
+            "是否保存已抽取名单?"
+        )
+        if result is True:
+            self.save_config()
+            root.destroy()
+        elif result is False:
+            root.destroy()
 
 
 if __name__ == "__main__":
