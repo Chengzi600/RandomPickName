@@ -11,8 +11,8 @@ from tkinter import messagebox
 class PickName:
     def __init__(self, root):
         # 版本信息
-        self.version = 'v1.3.2'
-        self.version_time = '2023.12.17'
+        self.version = 'v1.3.3dev1'
+        self.version_time = '2024.1.26'
         self.config_version = '1.1.2'
 
         # 初始名单
