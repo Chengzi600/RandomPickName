@@ -16,21 +16,13 @@ class PickName:
         self.config_version = '1.1.2'
 
         # 初始名单
-        self.names_bak = [
-            "陈佳绮", "邓佳丽", "邓欣悦", "邓颖欣", "段苏琴", "樊志杰", "龚雨轩", "胡思威", "胡雪颖",
-            "黄煜鑫", "姜文涛", "李芳仪", "李佳亮", "李钦", "刘晨", "刘恩泉", "刘圣洋", "罗星", "马可欣",
-            "浦睿", "孙健豪", "陶宸皓", "涂淑淇", "万宸希", "万晨欣", "万心悦", "万梓鑫", "王浩然", "王艺佳",
-            "吴雨馨", "徐嘉铭", "徐楠", "徐腾宇", "徐媛轩", "许隆劲", "杨可心", "余思妍", "余欣萌", "袁子扬",
-            "张睿", "张燕", "张濯铮", "章怡宸", "章轶琛", "赵梓霖", "周翔", "朱思静", "朱田茜", "祝馨怡", "刘思洁",
-            "魏博", "郭光星", "王佳鹏", "黄朝伟"
-        ]
 
         self.names = [
-            "邓颖欣", "姜文涛", "樊志杰", "马可欣", "陈佳绮", "黄朝伟", "余欣萌", "孙健豪", "刘晨", "黄煜鑫",
-            "龚雨轩", "袁子扬", "徐媛轩", "胡雪颖", "李钦", "浦睿", "许隆劲", "刘圣洋", "刘恩泉", "邓欣悦",
-            "徐楠", "涂淑淇", "余思妍", "万心悦", "魏博", "李佳亮", "徐腾宇", "周翔", "万晨欣", "张睿",
-            "胡思威", "朱思静", "章轶琛", "朱田茜", "李芳仪", "张濯铮", "段苏琴", "陶宸皓", "郭光星", "祝馨怡",
-            "刘思洁", "王佳鹏", "章怡宸", "徐嘉铭", "罗星", "张燕", "王浩然", "赵梓霖", "杨可心"
+            "程志林", "胡慧恩", "万涛", "万梓颖", "朱俊峰", "涂家俊", "钟子辰", "杨雅婷", "张鸿鑫",
+            "罗羽彤", "石财旺", "徐玉文", "郭子岚", "王凯成", "樊志轩", "邓奇", "史玉翔", "伍洋嘉",
+            "李悦岚", "程子洋", "谭斌", "黄宇飞", "徐瑛", "郑雅乐", "龚昊", "舒紫怡", "付雨昕",
+            "杨欣怡", "龚铭宇", "金欣悦", "曾子皓", "万宸希", "马灵馨", "熊可馨", "王艺佳", "李峻羽",
+            "曹殿号", "张京京", "黄泊源", "朱曦阳", "夏昕妍", "吴雨馨", "邓佳丽"
         ]
         self.g_names = [
             "陈佳绮", "邓颖欣", "邓欣悦", "段苏琴", "龚雨轩",
@@ -86,7 +78,7 @@ class PickName:
 
         self.root.geometry("700x550")
         self.root.title(
-            "点名程序(81专用) - 版本:{} - 编译日期:{}".format(self.version, self.version_time))
+            "点名程序(82专用) - 版本:{} - 编译日期:{}".format(self.version, self.version_time))
         self.root.resizable(False, False)
 
         # 姓名显示区域
@@ -115,12 +107,12 @@ class PickName:
         self.g_names_pick_var = tk.BooleanVar()
 
         self.g_names_pick_checkbox = tk.Checkbutton(self.root, text="只抽女生", command=self.set_pick_group_g,
-                                                    font=("宋体", 15), variable=self.g_names_pick_var, fg='red')
+                                                    font=("宋体", 15), variable=self.g_names_pick_var, fg='red', state='disabled')
         self.g_names_pick_checkbox.pack()
 
         self.b_names_pick_var = tk.BooleanVar()
         self.b_names_pick_checkbox = tk.Checkbutton(self.root, text="只抽男生", command=self.set_pick_group_b,
-                                                    font=("宋体", 15), variable=self.b_names_pick_var, fg='blue')
+                                                    font=("宋体", 15), variable=self.b_names_pick_var, fg='blue', state='disabled')
         self.b_names_pick_checkbox.pack()
 
         # 复选框，是否重复抽取
