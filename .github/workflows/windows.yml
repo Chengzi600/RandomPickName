@@ -36,6 +36,7 @@ jobs:
     - name: Build executable
       run: |
         pyinstaller -D -w -n RandomPickName dianming.py
+        pyinstaller -D -w -n RandomPickName82 dianming82.py
 
     # - name: Zip executable
     #   run: |
@@ -44,6 +45,8 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: Zip File
-        path: RandomPickName.zip  # 指定生成的 zip 文件路径
+        name: RandomPickNameEXE
+        path: |
+          dist\RandomPickName
+          dist\RandomPickName82
         
