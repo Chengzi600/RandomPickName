@@ -1,0 +1,37 @@
+name: RandomPickName for Windows
+
+on:
+  push:
+    branches:
+      - master  # 这里修改为你的主分支名，如 master
+
+jobs:
+  build:
+    runs-on: windows-latest  # 使用 Windows 环境运行
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # 指定你的 Python 版本
+
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller
+
+    - name: Build executable
+      run: |
+        pyinstaller -D -w -n RandomPickName dianming.py
+
+    - name: Zip executable
+      run: |
+        zip -r RandomPickName.zip dist/RandomPickName
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Zip File
+        path: RandomPickName.zip  # 指定生成的 zip 文件路径
