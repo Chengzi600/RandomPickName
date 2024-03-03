@@ -10,30 +10,36 @@ jobs:
     runs-on: windows-latest  # 使用 Windows 环境运行
 
     steps:
-    # - name: Checkout code
-    #   uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    # - name: Set up Python
-    #   uses: actions/setup-python@v2
-    #   with:
-    #     python-version: '3.x'  # 指定你的 Python 版本
-
-    - name: PyInstaller Action
-      uses: Martin005/pyinstaller-action@v1.2.0
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-          python_ver: '3.9'
-          spec: 'dianming.py'
-          upload_exe_with_name: 'RandomPickName ZIP'
-          options: --onedir, --name "RandomPickName", --windowed, 
+          python-version: '3.x'  # 指定你的 Python 版本
+
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller
+        pip install requests
+
+
+    # - name: PyInstaller Action
+    #   uses: Martin005/pyinstaller-action@v1.2.0
+    #   with:
+    #       python_ver: '3.9'
+    #       spec: 'dianming.py'
+    #       upload_exe_with_name: 'RandomPickName ZIP'
+    #       options: --onedir, --name "RandomPickName", --windowed, 
             
 
-    # - name: Build executable
-    #   run: |
-    #     pyinstaller -D -w -n RandomPickName dianming.py
-
-    - name: Zip executable
+    - name: Build executable
       run: |
-        Compress-Archive -Path dist\RandomPickName -DestinationPath RandomPickName.zip
+        pyinstaller -D -w -n RandomPickName dianming.py
+
+    # - name: Zip executable
+    #   run: |
+    #     Compress-Archive -Path dist\RandomPickName -DestinationPath RandomPickName.zip
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
