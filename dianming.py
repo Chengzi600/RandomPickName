@@ -11,20 +11,12 @@ from tkinter import messagebox
 class PickName:
     def __init__(self, root):
         # 版本信息
-        self.version = 'v1.3.4'
-        self.version_time = '2024.3.1'
-        self.config_version = '1.1.2'
+        self.version = 'v1.3.5'
+        self.version_time = '2024.6.10'
+        self.version_info = '81专用'
+        self.config_version = '1.1.3'
 
         # 初始名单
-        self.names_bak = [
-            "陈佳绮", "邓佳丽", "邓欣悦", "邓颖欣", "段苏琴", "樊志杰", "龚雨轩", "胡思威", "胡雪颖",
-            "黄煜鑫", "姜文涛", "李芳仪", "李佳亮", "李钦", "刘晨", "刘恩泉", "刘圣洋", "罗星", "马可欣",
-            "浦睿", "孙健豪", "陶宸皓", "涂淑淇", "万宸希", "万晨欣", "万心悦", "万梓鑫", "王浩然", "王艺佳",
-            "吴雨馨", "徐嘉铭", "徐楠", "徐腾宇", "徐媛轩", "许隆劲", "杨可心", "余思妍", "余欣萌", "袁子扬",
-            "张睿", "张燕", "张濯铮", "章怡宸", "章轶琛", "赵梓霖", "周翔", "朱思静", "朱田茜", "祝馨怡", "刘思洁",
-            "魏博", "郭光星", "王佳鹏", "黄朝伟"
-        ]
-
         self.names = [
             "邓颖欣", "姜文涛", "樊志杰", "马可欣", "陈佳绮", "黄朝伟", "余欣萌", "孙健豪", "刘晨", "黄煜鑫",
             "龚雨轩", "袁子扬", "徐媛轩", "胡雪颖", "李钦", "浦睿", "许隆劲", "刘圣洋", "刘恩泉", "邓欣悦",
@@ -39,13 +31,6 @@ class PickName:
             "徐楠", "徐媛轩", "杨可心", "余思妍", "余欣萌", "张燕",
             "张濯铮", "朱思静", "朱田茜", "祝馨怡", "章怡宸", "刘思洁"
         ]
-        self.g_names_bak = [
-            "陈佳绮", "邓佳丽", "邓欣悦", "邓颖欣", "段苏琴", "龚雨轩",
-            "胡雪颖", "李芳仪", "马可欣",
-            "涂淑淇", "万宸希", "万晨欣", "万心悦", "王艺佳", "吴雨馨",
-            "徐楠", "徐媛轩", "杨可心", "余思妍", "余欣萌", "张燕",
-            "张濯铮", "朱思静", "朱田茜", "祝馨怡", "章怡宸"
-        ]
         self.b_names = [
             '樊志杰', '胡思威', '黄煜鑫', '姜文涛', '刘恩泉', '刘圣洋', '罗星', '浦睿',
             '孙健豪', '陶宸皓', '徐嘉铭', '徐腾宇', '许隆劲', '袁子扬',
@@ -53,12 +38,6 @@ class PickName:
             "郭光星", "王佳鹏", "黄朝伟"
 
         ]
-        self.b_names_bak = [
-            '樊志杰', '胡思威', '黄煜鑫', '姜文涛', '刘恩泉', '刘圣洋', '罗星', '浦睿',
-            '孙健豪', '陶宸皓', '万梓鑫', '徐嘉铭', '徐腾宇', '许隆劲', '袁子扬',
-            '张睿', '章轶琛', '赵梓霖', '周翔', "李钦", "刘晨", "李佳亮", "王浩然"
-        ]
-
         # print(len(self.g_names)+len(self.b_names))
         # print(len(self.b_names))
         # print(len(self.b_names_bak))
@@ -72,11 +51,12 @@ class PickName:
         self.pick_again = False
         self.animation = True
         self.recite = False
+        self.is_save = False
         self.pick_only_g = False
         self.pick_only_b = False
         self.animation_time = 1.0
         self.picked_count = 0
-        self.wait_recite_time = 5
+        self.wait_recite_time = 3
 
         self.start_time = 0
         self.elapsed_time = 0
@@ -84,59 +64,99 @@ class PickName:
         self.root = root
         self.selected_name = ''
 
-        self.root.geometry("700x550")
+        self.root.geometry("570x630")
         self.root.title(
-            "点名程序(81专用) - 版本:{} - 编译日期:{}".format(self.version, self.version_time))
+            "点名程序({}) - 版本:{} - 编译日期:{}".format(self.version_info, self.version, self.version_time))
         self.root.resizable(False, False)
 
         # 姓名显示区域
-        self.name_label = tk.Label(self.root, text="请抽取", font=("宋体", 85))
+        self.name_label = tk.Label(self.root, text="请抽取", font=("微软雅黑", 90))
         self.name_label.pack(pady=30)
 
         # 计时器显示区域
-        self.timer_label = tk.Label(self.root, text="0.0s", font=('宋体', 40))
+        self.timer_label = tk.Label(self.root, text="0.0s", font=('得意黑', 40))
 
         # 抽取名字按钮
-        self.pick_name_button = tk.Button(self.root, text="抽取名字", command=self.pick_name, font=("黑体", 25),
+        self.pick_name_button = tk.Button(self.root, text="   -->>抽取<<--   ", command=self.pick_name, font=("黑体", 30),
                                           bg='orange')
         self.pick_name_button.pack()
 
+        # 创建空白区域
+        self.blank_space1 = tk.Label(self.root, text="", font=("宋体", 2), fg='black')
+        self.blank_space1.pack()
+
         # 重置按钮
-        self.reset_button = tk.Button(self.root, text="重置已抽取名单", command=self.reset, font=("黑体", 20), fg='red')
+        self.reset_button = tk.Button(self.root, text="    重置名单    ", command=self.reset, font=("黑体", 20), fg='red')
         self.reset_button.pack()
+
+        # 创建空白区域
+        self.blank_space2 = tk.Label(self.root, text="", font=("宋体", 15), fg='black')
+        self.blank_space2.pack()
+        self.blank_space3 = tk.Label(self.root, text="--配置区--", font=("得意黑", 15), fg='black')
+        self.blank_space3.pack()
+
+        # 创建一个复选框的框架容器 by GPT4o
+        self.checkbox_frame = tk.Frame(self.root)
+        self.checkbox_frame.pack()
+
+        # 创建复选框组 1 by GPT4o
+        self.checkbox_group1 = tk.Frame(self.checkbox_frame)
+        self.checkbox_group1.pack(anchor='center')
+
+        # 创建复选框组 2 by GPT4o
+        self.checkbox_group2 = tk.Frame(self.checkbox_frame)
+        self.checkbox_group2.pack(anchor='center')
+
+        # 创建复选框组 3 by GPT4o
+        self.checkbox_group3 = tk.Frame(self.checkbox_frame)
+        self.checkbox_group3.pack(anchor='center')
+
+        # 复选框，是否保存
+        self.is_save_var = tk.BooleanVar()
+        self.is_save_var_checkbox = tk.Checkbutton(self.checkbox_group3, text="退出时保存", command=self.set_save,
+                                                   font=("宋体", 15), variable=self.is_save_var, fg='purple')
+        self.is_save_var_checkbox.pack(side='left')
 
         # 复选框，是否背书模式
         self.recite_var = tk.BooleanVar()
-        self.recite_checkbox = tk.Checkbutton(self.root, text="背课文计时器", command=self.set_recite,
+        self.recite_checkbox = tk.Checkbutton(self.checkbox_group1, text="计时器", command=self.set_recite,
                                               font=("宋体", 15), variable=self.recite_var, fg='brown')
-        self.recite_checkbox.pack()
+        self.recite_checkbox.pack(side='left')
 
         # 复选框，是否只抽男/女
         self.g_names_pick_var = tk.BooleanVar()
-
-        self.g_names_pick_checkbox = tk.Checkbutton(self.root, text="只抽女生", command=self.set_pick_group_g,
+        self.g_names_pick_checkbox = tk.Checkbutton(self.checkbox_group2, text="只抽女生",
+                                                    command=self.set_pick_group_g,
                                                     font=("宋体", 15), variable=self.g_names_pick_var, fg='red')
-        self.g_names_pick_checkbox.pack()
+        self.g_names_pick_checkbox.pack(side='left')
 
         self.b_names_pick_var = tk.BooleanVar()
-        self.b_names_pick_checkbox = tk.Checkbutton(self.root, text="只抽男生", command=self.set_pick_group_b,
+        self.b_names_pick_checkbox = tk.Checkbutton(self.checkbox_group2, text="只抽男生",
+                                                    command=self.set_pick_group_b,
                                                     font=("宋体", 15), variable=self.b_names_pick_var, fg='blue')
-        self.b_names_pick_checkbox.pack()
+        self.b_names_pick_checkbox.pack(side='left')
 
         # 复选框，是否重复抽取
         self.pick_again_var = tk.BooleanVar()
-        self.pick_again_checkbox = tk.Checkbutton(self.root, text="允许重复抽取", command=self.set_pick_again,
+        self.pick_again_checkbox = tk.Checkbutton(self.checkbox_group3, text="允许重复抽取",
+                                                  command=self.set_pick_again,
                                                   font=("宋体", 15), variable=self.pick_again_var)
-        self.pick_again_checkbox.pack()
+        self.pick_again_checkbox.pack(side='left')
 
         # 复选框，是否显示动画
         self.pick_animation_var = tk.BooleanVar()
-        self.pick_animation_checkbox = tk.Checkbutton(self.root, text="开启动画", command=self.set_animation,
+        self.pick_animation_checkbox = tk.Checkbutton(self.checkbox_group3, text="开启动画", command=self.set_animation,
                                                       font=("宋体", 15), variable=self.pick_animation_var)
-        self.pick_animation_checkbox.pack()
+        self.pick_animation_checkbox.pack(side='left')
+
+        # # 创建空白区域
+        # self.blank_space4 = tk.Label(self.root, text="", font=("宋体", 15), fg='black')
+        # self.blank_space4.pack()
+        # self.blank_space5 = tk.Label(self.root, text="--统计信息--", font=("得意黑", 15), fg='black')
+        # self.blank_space5.pack()
 
         # 统计标签
-        self.stats_label = tk.Label(self.root, text="统计信息获取中...", font=("宋体", 15))
+        self.stats_label = tk.Label(self.root, text="统计信息获取中...", font=("得意黑", 17), fg='green')
         self.stats_label.pack(side='bottom')
 
         # 初始化
@@ -149,15 +169,16 @@ class PickName:
     # 配置文件读取
     def read_config(self):
         try:
-            os.makedirs('./dianming/', exist_ok=True)
-            file_dir = r'./dianming/config.json'
+            os.makedirs('./PickNameConfig/', exist_ok=True)
+            file_dir = r'./PickNameConfig/config.json'
             config_v = {
                 'pick_again': self.pick_again,
                 'animation': self.animation,
                 'animation_time': self.animation_time,
-                'can_pick_names': self.names,
+                'is_save': self.is_save,
                 'picked_count': self.picked_count,
-                'config_version': self.config_version
+                'config_version': self.config_version,
+                'can_pick_names': self.names,
             }
             try:
                 with open(file_dir, encoding='utf-8') as config_file:
@@ -167,6 +188,8 @@ class PickName:
                                                '配置文件过时! 该版本的配置文件格式与当前不符\n请删除本程序的配置文件夹，然后重启程序！')
                         sys.exit('CONFIG_OUT_OF_DATE')
 
+                    self.is_save = config['is_save']
+                    self.is_save_var.set(self.is_save)
                     self.pick_again = config['pick_again']
                     self.animation = config['animation']
                     self.animation_time = config['animation_time']
@@ -193,12 +216,16 @@ class PickName:
     # 配置文件写入
     def save_config(self):
         try:
-            file_dir = r'./dianming/config.json'
+            file_dir = r'./PickNameConfig/config.json'
             with open(file_dir, 'r', encoding='utf-8') as config_file:
                 config = json.load(config_file)
+                config['is_save'] = self.is_save
                 config['pick_again'] = self.pick_again
                 config['animation'] = self.animation
-                config['can_pick_names'] = self.can_pick_names
+                if self.is_save:
+                    config['can_pick_names'] = self.can_pick_names
+                else:
+                    config['can_pick_names'] = self.names
                 config['picked_count'] = self.picked_count
             with open(file_dir, 'w', encoding='utf-8') as config_file:
                 json.dump(config, config_file, ensure_ascii=False)
@@ -230,6 +257,12 @@ class PickName:
             self.recite = False
             self.is_running = False
             self.timer_label.forget()
+
+    def set_save(self):
+        if not self.is_save:
+            self.is_save = True
+        else:
+            self.is_save = False
 
     def set_pick_group_g(self):
         if not self.pick_only_g:
@@ -336,7 +369,7 @@ class PickName:
             self.root.after(100, self.update_timer)
 
     def reset(self, no_tip=False):
-        if no_tip:
+        def perform_reset():
             if self.is_running:
                 self.is_running = False
             if self.recite:
@@ -347,23 +380,13 @@ class PickName:
             self.pick_name_button.config(state='normal')
             self.save_config()
             self.update_stats()
-            messagebox.showinfo("提示", "已清空已抽取名单!")
 
+        if no_tip:
+            perform_reset()
         else:
             if messagebox.askyesno('提示', '你确定要重置已抽取名单吗?'):
-                if self.is_running:
-                    self.is_running = False
-                if self.recite:
-                    self.timer_label.config(text="0.0s")
-                self.set_pick_group('clear')
-                self.can_pick_names = self.names.copy()
-                self.name_label.config(text="请抽取", fg='black')
-                self.pick_name_button.config(state='normal')
-                self.save_config()
-                self.update_stats()
+                perform_reset()
                 messagebox.showinfo("提示", "已清空已抽取名单!")
-            else:
-                return
 
     def pick_animation(self):
         if len(self.can_pick_names) <= 2:
@@ -386,28 +409,27 @@ class PickName:
             return
 
     def update_stats(self):
-
         if not self.pick_again:
             try:
                 if self.pick_only_g:
                     self.stats_label.config(
-                        text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n未抽者被抽概率: {}%".format(
+                        text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n被抽概率: {}%".format(
                             len(self.g_names) - len(self.can_pick_names),
                             len(self.can_pick_names), self.picked_count, round(1 / len(self.can_pick_names) * 100, 2)))
                 elif self.pick_only_b:
                     self.stats_label.config(
-                        text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n未抽者被抽概率: {}%".format(
+                        text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n被抽概率: {}%".format(
                             len(self.b_names) - len(self.can_pick_names),
                             len(self.can_pick_names), self.picked_count, round(1 / len(self.can_pick_names) * 100, 2)))
                 else:
                     self.stats_label.config(
-                        text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n未抽者被抽概率: {}%".format(
+                        text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n被抽概率: {}%".format(
                             len(self.names) - len(self.can_pick_names),
                             len(self.can_pick_names), self.picked_count, round(1 / len(self.can_pick_names) * 100, 2)))
 
             except ZeroDivisionError:
                 self.stats_label.config(
-                    text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n未抽者被抽概率: {}%".format(
+                    text="已抽取人数: {}  可抽取人数: {} 总抽取次数: {}\n被抽概率: {}%".format(
                         "抽完了",
                         len(self.can_pick_names), self.picked_count, '0'))
         else:
@@ -440,23 +462,11 @@ class PickName:
             self.root.geometry("700x490")
 
     def on_closing(self):
-        if self.pick_only_g or self.pick_only_b:
+        if self.pick_only_g or self.pick_only_b or self.pick_again:
             self.reset(no_tip=True)
             sys.exit()
-
-        if self.pick_again:
-            self.reset(no_tip=True)
+        else:
             self.save_config()
-            sys.exit()
-
-        result = messagebox.askyesno(
-            "保存吗?",
-            "是否保存已抽取名单？"
-        )
-        if result is True:
-            self.save_config()
-            root.destroy()
-        elif result is False:
             root.destroy()
 
 
