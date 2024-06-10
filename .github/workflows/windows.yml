@@ -1,0 +1,53 @@
+name: RandomPickName for Windows
+
+on:
+  push:
+    branches:
+      - master  # 这里修改为你的主分支名，如 master
+
+jobs:
+  build:
+    runs-on: windows-latest  # 使用 Windows 环境运行
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+          python-version: '3.x'  # 指定你的 Python 版本
+
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller
+        pip install requests
+
+
+    # - name: PyInstaller Action
+    #   uses: Martin005/pyinstaller-action@v1.2.0
+    #   with:
+    #       python_ver: '3.9'
+    #       spec: 'dianming.py'
+    #       upload_exe_with_name: 'RandomPickName ZIP'
+    #       options: --onedir, --name "RandomPickName", --windowed, 
+            
+
+    - name: Build executable
+      run: |
+        pyinstaller -D -w -n RandomPickName dianming.py
+        pyinstaller -D -w -n RandomPickName82 dianming82.py
+
+    - name: Zip executable
+      run: |
+        Compress-Archive -Path dist\RandomPickName -DestinationPath RandomPickName.zip
+        Compress-Archive -Path dist\RandomPickName82 -DestinationPath RandomPickName82.zip
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: RandomPickNameEXE
+        path: |
+          RandomPickName.zip
+          RandomPickName82.zip
+        
