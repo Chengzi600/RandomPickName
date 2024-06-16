@@ -5,44 +5,27 @@ import sys
 import time
 import requests
 import tkinter as tk
+import webbrowser
 from tkinter import messagebox
 
 
 class PickName:
     def __init__(self, root):
         # 版本信息
-        self.version = 'v1.3.5'
-        self.version_time = '2024.6.10'
-        self.version_info = '81专用'
+        self.version = 'v1.4.0'
+        self.version_time = '2024.6.15'
+        self.version_info = ''
         self.config_version = '1.1.3'
 
         # 初始名单
-        self.names = [
-            "邓颖欣", "姜文涛", "樊志杰", "马可欣", "陈佳绮", "黄朝伟", "余欣萌", "孙健豪", "刘晨", "黄煜鑫",
-            "龚雨轩", "袁子扬", "徐媛轩", "胡雪颖", "李钦", "浦睿", "许隆劲", "刘圣洋", "刘恩泉", "邓欣悦",
-            "徐楠", "涂淑淇", "余思妍", "万心悦", "魏博", "李佳亮", "徐腾宇", "周翔", "万晨欣", "张睿",
-            "胡思威", "朱思静", "章轶琛", "朱田茜", "李芳仪", "张濯铮", "段苏琴", "陶宸皓", "郭光星", "祝馨怡",
-            "刘思洁", "王佳鹏", "章怡宸", "徐嘉铭", "罗星", "张燕", "王浩然", "赵梓霖", "杨可心"
-        ]
-        self.g_names = [
-            "陈佳绮", "邓颖欣", "邓欣悦", "段苏琴", "龚雨轩",
-            "胡雪颖", "李芳仪", "马可欣",
-            "涂淑淇", "万晨欣", "万心悦",
-            "徐楠", "徐媛轩", "杨可心", "余思妍", "余欣萌", "张燕",
-            "张濯铮", "朱思静", "朱田茜", "祝馨怡", "章怡宸", "刘思洁"
-        ]
-        self.b_names = [
-            '樊志杰', '胡思威', '黄煜鑫', '姜文涛', '刘恩泉', '刘圣洋', '罗星', '浦睿',
-            '孙健豪', '陶宸皓', '徐嘉铭', '徐腾宇', '许隆劲', '袁子扬',
-            '张睿', '章轶琛', '赵梓霖', '周翔', "李钦", "刘晨", "李佳亮", "王浩然", "魏博",
-            "郭光星", "王佳鹏", "黄朝伟"
+        self.names = []
+        self.g_names = []
+        self.b_names = []
 
-        ]
         # print(len(self.g_names)+len(self.b_names))
         # print(len(self.b_names))
         # print(len(self.b_names_bak))
         # print(len(self.names))
-        # self.names = ['a', 'b', 'c', 'd']
 
         # 初始化已抽取的名字列表
         self.can_pick_names = self.names.copy()
@@ -66,18 +49,23 @@ class PickName:
 
         self.root.geometry("570x630")
         self.root.title(
-            "点名程序({}) - 版本:{} - 编译日期:{}".format(self.version_info, self.version, self.version_time))
+            "随机点名{} - 版本:{} - 版本日期:{}".format(self.version_info, self.version, self.version_time))
         self.root.resizable(False, False)
+
+        # 项目链接
+        self.about_button = tk.Button(self.root, text="关于项目", command=self.about_msgbox, font=("得意黑", 15))
+        self.about_button.pack(anchor='nw', padx=10, pady=5)
 
         # 姓名显示区域
         self.name_label = tk.Label(self.root, text="请抽取", font=("微软雅黑", 90))
-        self.name_label.pack(pady=30)
+        self.name_label.pack(pady=10)
 
         # 计时器显示区域
         self.timer_label = tk.Label(self.root, text="0.0s", font=('得意黑', 40))
 
         # 抽取名字按钮
-        self.pick_name_button = tk.Button(self.root, text="   -->>抽取<<--   ", command=self.pick_name, font=("黑体", 30),
+        self.pick_name_button = tk.Button(self.root, text="   -->>抽取<<--   ", command=self.pick_name,
+                                          font=("黑体", 30),
                                           bg='orange')
         self.pick_name_button.pack()
 
@@ -86,7 +74,8 @@ class PickName:
         self.blank_space1.pack()
 
         # 重置按钮
-        self.reset_button = tk.Button(self.root, text="    重置名单    ", command=self.reset, font=("黑体", 20), fg='red')
+        self.reset_button = tk.Button(self.root, text="    重置名单    ", command=self.reset, font=("黑体", 20),
+                                      fg='red')
         self.reset_button.pack()
 
         # 创建空白区域
@@ -171,6 +160,12 @@ class PickName:
         try:
             os.makedirs('./PickNameConfig/', exist_ok=True)
             file_dir = r'./PickNameConfig/config.json'
+            # 创建names.txt和g_names.txt文件并写入示例内容
+            names_file_dir = './PickNameConfig/names.txt'
+            g_names_file_dir = './PickNameConfig/g_names.txt'
+            example_names = '名字1\n名字2\n名字3\n'
+            g_example_names = '女名1\n女名2\n女名3\n'
+
             config_v = {
                 'pick_again': self.pick_again,
                 'animation': self.animation,
@@ -181,11 +176,21 @@ class PickName:
                 'can_pick_names': self.names,
             }
             try:
+                with open(names_file_dir, 'r', encoding='utf-8') as names_file:
+                    # 逐行读取文件并去掉每行末尾的换行符
+                    self.names = [line.strip() for line in names_file if line.strip()]
+                with open(g_names_file_dir, 'r', encoding='utf-8') as g_names_file:
+                    self.g_names = [line.strip() for line in g_names_file if line.strip()]
+
+                for name in self.names:
+                    if name not in self.g_names:
+                        self.b_names.append(name)
+
                 with open(file_dir, encoding='utf-8') as config_file:
                     config = json.load(config_file)
                     if not config['config_version'] == self.config_version:
                         messagebox.showwarning('警告',
-                                               '配置文件过时! 该版本的配置文件格式与当前不符\n请删除本程序的配置文件夹，然后重启程序！')
+                                               '配置文件过时! 该版本的配置文件格式与当前不符\n请删除本程序的配置文件config.json，然后重启程序！')
                         sys.exit('CONFIG_OUT_OF_DATE')
 
                     self.is_save = config['is_save']
@@ -201,15 +206,21 @@ class PickName:
             except FileNotFoundError as e:
                 with open(file_dir, 'w+', encoding='utf-8') as config_file:
                     json.dump(config_v, config_file)
+                if not os.path.exists(names_file_dir):
+                    with open(names_file_dir, 'w', encoding='utf-8') as names_file:
+                        names_file.write(example_names)
+                if not os.path.exists(g_names_file_dir):
+                    with open(g_names_file_dir, 'w', encoding='utf-8') as g_names_file:
+                        g_names_file.write(g_example_names)
                 # with open(file_dir) as config_file_r:
                 # config = json.load(config_file_r)
                 # config_d = json.dumps(config, sort_keys=True, indent=4, separators=(',', ': '))
-                messagebox.showinfo('提示', '配置文件创建成功!\n请重启程序!')
+                messagebox.showinfo('提示', '配置文件夹创建成功!\n请在names.txt文件中编辑名单!')
                 print(e)
                 sys.exit('CREATED_CONFIG_SUCCESSFULLY')
         except Exception as e:
             messagebox.showerror('错误',
-                                 '配置文件创建或读取错误!\n请检查程序是否有对当前文件夹的读写权限\n可能配置文件已经损坏，请删除配置文件夹')
+                                 '配置文件创建或读取错误!\n请检查程序是否有对当前文件夹的读写权限\n如果不小心损坏了配置文件，请删掉config.json')
             print("错误信息:", e)
             sys.exit('FAILED_TO_LOAD_CONFIG')
 
@@ -460,6 +471,30 @@ class PickName:
             self.root.title(
                 "【已是最新版本】点名程序(81专用) - 版本:{} - 编译日期:{}".format(self.version, self.version_time))
             self.root.geometry("700x490")
+
+    def about_msgbox(self):
+        # 检查更新
+        try:
+            response = requests.get("https://api.github.com/repos/Chengzi600/RandomPickName/releases/latest")
+            latest_version = response.json()['tag_name']
+            if latest_version == self.version:
+                latest_version = latest_version + '(已是最新版本)'
+            else:
+                latest_version = latest_version + '(发现新版本)'
+            latest_version_info = response.json()['body']
+        except Exception as e:
+            print('检查更新失败:', e)
+            latest_version = '检测失败'
+            latest_version_info = '获取更新失败'
+
+        if messagebox.askyesno('关于本程序', '项目Github地址:https://github.com/Chengzi600/RandomPickName\n'
+                                             '作者:Chengzi600\n\n'
+                                             '检查更新:\n'
+                                             '当前最新版本:{}\n最新版本信息:\n{}\n\n'
+                                             '由于作者是学生，一般不太会更新，请多多包容!\n\n'
+                                             '单击“是”打开 Github Releases 界面下载最新版本'.format(latest_version,
+                                                                                                    latest_version_info)):
+            webbrowser.open("https://github.com/Chengzi600/RandomPickName/releases")
 
     def on_closing(self):
         if self.pick_only_g or self.pick_only_b or self.pick_again:
