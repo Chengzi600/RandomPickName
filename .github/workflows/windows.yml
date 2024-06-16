@@ -35,13 +35,13 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller -D -w -n RandomPickName dianming.py
-        pyinstaller -D -w -n RandomPickName82 dianming82.py
+        pyinstaller -D -w -n RandomPickName RandomPickName.py
+
 
     - name: Zip executable
       run: |
         Compress-Archive -Path dist\RandomPickName -DestinationPath RandomPickName.zip
-        Compress-Archive -Path dist\RandomPickName82 -DestinationPath RandomPickName82.zip
+
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
@@ -49,5 +49,5 @@ jobs:
         name: RandomPickNameEXE
         path: |
           RandomPickName.zip
-          RandomPickName82.zip
+
         
